@@ -1,1057 +1,293 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gender Pricing Transparency Engine | Crowdsourced Data Audit</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #24292e;
-            line-height: 1.6;
-        }
-
-        /* Navigation & Header */
-        header {
-            background: #1f2328;
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 30px;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: #79c0ff;
-        }
-
-        /* Policy Callout Banner */
-        .policy-banner {
-            background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .policy-banner h2 {
-            font-size: 1.8rem;
-            margin-bottom: 12px;
-        }
-
-        .policy-banner p {
-            font-size: 1.05rem;
-            margin-bottom: 15px;
-            opacity: 0.95;
-        }
-
-        .policy-btn {
-            display: inline-block;
-            background: white;
-            color: #ff6b6b;
-            padding: 12px 28px;
-            border-radius: 24px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-top: 10px;
-        }
-
-        .policy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 40px;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e1e4e8;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #586069;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab-btn.active {
-            color: #0366d6;
-            border-bottom-color: #0366d6;
-        }
-
-        .tab-btn:hover {
-            color: #0366d6;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #e1e4e8;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .card h3 {
-            margin-top: 0;
-            color: #1f2328;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-
-        .card-description {
-            color: #586069;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #24292e;
-            font-size: 0.95rem;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5da;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: inherit;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #0366d6;
-            box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.1);
-        }
-
-        .two-column {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .two-column {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: #0366d6;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #0056b3;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(3, 102, 214, 0.3);
-        }
-
-        .btn-secondary {
-            background: #6a737d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #4a5568;
-        }
-
-        /* Results & Stats */
-        .result-box {
-            background: #e6f4ea;
-            border: 2px solid #34a853;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .result-box.success {
-            display: block;
-        }
-
-        .result-box h4 {
-            color: #137333;
-            margin-top: 0;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-left: 4px solid #0366d6;
-            padding: 20px;
-            border-radius: 6px;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #0366d6;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #586069;
-            font-weight: 500;
-        }
-
-        /* Database Display */
-        .submission-item {
-            background: white;
-            border: 1px solid #e1e4e8;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .submission-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
-        }
-
-        .submission-title {
-            font-weight: 600;
-            color: #1f2328;
-            font-size: 1.05rem;
-        }
-
-        .submission-meta {
-            font-size: 0.85rem;
-            color: #586069;
-            display: flex;
-            gap: 20px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #f0f0f0;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #24292e;
-        }
-
-        .badge.region {
-            background: #e6f4ea;
-            color: #137333;
-        }
-
-        .badge.category {
-            background: #e6ecff;
-            color: #0366d6;
-        }
-
-        /* Regional Analysis */
-        .regional-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .regional-table th, .regional-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e1e4e8;
-        }
-
-        .regional-table th {
-            background: #f6f8fa;
-            font-weight: 600;
-            color: #24292e;
-        }
-
-        .regional-table tr:hover {
-            background: #f6f8fa;
-        }
-
-        /* Filters */
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: #f6f8fa;
-            border-radius: 6px;
-        }
-
-        .filter-group label {
-            margin-bottom: 5px;
-        }
-
-        .filter-group select {
-            margin-bottom: 0;
-        }
-
-        /* Methodology */
-        .methodology {
-            background: #fafbfc;
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #586069;
-        }
-
-        .methodology h4 {
-            color: #24292e;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
-        .methodology ol, .methodology ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-
-        .methodology li {
-            margin-bottom: 8px;
-        }
-
-        /* Success Message */
-        .success-message {
-            background: #e6f4ea;
-            border: 1px solid #ceead6;
-            color: #137333;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        /* Loading */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid #e1e4e8;
-            border-top-color: #0366d6;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gender Pricing Transparency Engine — Evidence Log</title>
+  <meta name="description" content="Pink Tax calculator and crowdsourced evidence log (local-first, localStorage). Unit-price normalization, equivalence rules and community verification." />
+  <style>
+    :root{
+      --bg:#f6f8fb; --card:#fff; --muted:#6b7280; --accent:#2563eb; --danger:#ef4444; --good:#10b981;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body{background:var(--bg);margin:0;padding:24px;color:#0f172a}
+    .container{max-width:1100px;margin:0 auto}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.06);margin-bottom:18px}
+    h1,h2{margin:0 0 8px 0}
+    p.lead{margin:0;color:var(--muted);font-size:0.95rem}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;align-items:end}
+    label{font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px}
+    input[type="number"], input[type="text"], select, input[type="file"], textarea{
+      padding:8px 10px;border-radius:8px;border:1px solid #e6edf6;background:#fff;font-size:1rem;
+    }
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid #e6edf6;color:var(--accent)}
+    .btn.danger{background:var(--danger);color:#fff}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1;min-width:160px}
+    .visual{margin-top:14px}
+    .bar-wrap{height:44px;background:#f1f5f9;border-radius:10px;overflow:hidden;position:relative}
+    .bar-base{height:100%;background:linear-gradient(90deg,var(--good),#34d399);width:60%;transition:width 300ms ease}
+    .bar-mark{position:absolute;right:0;top:0;height:100%;background:linear-gradient(90deg,var(--danger),#fb7185);width:40%;transition:width 300ms ease}
+    .bar-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:0.95rem;color:var(--muted)}
+    .legend{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:0.9rem}
+    .legend .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+    .stats{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+    .stat{background:rgba(8,33,63,0.04);padding:10px 12px;border-radius:8px;font-size:0.95rem}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px 8px;border-bottom:1px solid #eef2f7;text-align:left;font-size:0.95rem;vertical-align:middle}
+    th{font-weight:600;color:#0b1220}
+    .actions button{margin-right:6px}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .table-wrap{overflow:auto}
+    .controls-bottom{display:flex;gap:8px;margin-top:12px;align-items:center}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:0.8rem}
+    .badge.unverified{background:#fff7ed;color:#92400e;border:1px solid #ffecd1}
+    .badge.confirmed{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
+    .badge.disputed{background:#fff1f2;color:#861b27;border:1px solid #ffd6de}
+    .equivalence{margin-top:10px;padding:10px;background:#fbfbff;border-radius:8px;border:1px solid #eef2f7}
+    .img-preview{max-width:160px;border-radius:6px;border:1px solid #e6edf6}
+    @media (max-width:720px){
+      .controls{flex-direction:column;align-items:stretch}
+      .row{flex-direction:column}
+      .stats{flex-direction:column}
+    }
+  </style>
 </head>
 <body>
-
-<header>
-    <div class="header-content">
-        <div class="logo">💰 Gender Pricing Transparency Engine</div>
-        <nav>
-            <a href="#audit">Data Audit</a>
-            <a href="#submit">Submit Evidence</a>
-            <a href="#analysis">Regional Analysis</a>
-        </nav>
-    </div>
-</header>
-
-<div class="policy-banner">
-    <h2>The Pink Tax: A Global Economic Disparity</h2>
-    <p>Women pay an average of 7-40% more for identical products. We're crowdsourcing real evidence to quantify the disparity and drive policy change.</p>
-    <a href="#" class="policy-btn" onclick="showPolicyArticle(); return false;">📄 Read Full Policy Breakdown</a>
-</div>
-
-<div class="container">
-
-    <!-- Tab Navigation -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab(event, 'audit')">📊 Database & Audit</button>
-        <button class="tab-btn" onclick="switchTab(event, 'submit')">📤 Submit Evidence</button>
-        <button class="tab-btn" onclick="switchTab(event, 'analysis')">🌍 Regional Analysis</button>
-        <button class="tab-btn" onclick="switchTab(event, 'calculator')">🧮 Quick Calculator</button>
+  <div class="container">
+    <div class="card" id="hero">
+      <h1>Gender Pricing Transparency Engine</h1>
+      <p class="lead">Pink Tax calculator + local crowdsourced evidence log. Submissions are stored locally (localStorage). This page enforces equivalence rules, unit normalization, and a simple community verification flow.</p>
     </div>
 
-    <!-- Tab 1: Database & Audit -->
-    <div id="audit" class="tab-content active">
-        <div class="card">
-            <h3>Crowdsourced Pricing Audit Database</h3>
-            <p class="card-description">Real-world evidence of gender-based price markups from our global community. Each submission is independently verified and analyzed.</p>
+    <div class="card" id="calculatorCard" aria-labelledby="calcTitle">
+      <h2 id="calcTitle">Calculator & Visual</h2>
 
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Category:</label>
-                    <select id="filterCategory" onchange="filterDatabase()">
-                        <option value="">All Categories</option>
-                        <option value="personal-care">Personal Care & Grooming</option>
-                        <option value="apparel">Apparel & Dry Cleaning</option>
-                        <option value="toys">Children's Toys</option>
-                        <option value="cosmetics">Cosmetics & Beauty</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Region:</label>
-                    <select id="filterRegion" onchange="filterDatabase()">
-                        <option value="">All Regions</option>
-                        <option value="uae">UAE</option>
-                        <option value="mena">MENA</option>
-                        <option value="asia">Asia</option>
-                        <option value="europe">Europe</option>
-                        <option value="americas">Americas</option>
-                        <option value="africa">Africa</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Min Markup %:</label>
-                    <input type="number" id="filterMarkup" value="0" min="0" max="500" onchange="filterDatabase()">
-                </div>
-            </div>
-
-            <div id="databaseContainer">
-                <div class="loading active">
-                    <div class="spinner"></div>
-                    <p>Loading submissions...</p>
-                </div>
-            </div>
-
-            <div class="stat-grid" style="margin-top: 40px;">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalSubmissions">0</div>
-                    <div class="stat-label">Total Submissions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="avgMarkup">0%</div>
-                    <div class="stat-label">Average Markup</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="maxMarkup">0%</div>
-                    <div class="stat-label">Highest Markup Found</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="regionCount">0</div>
-                    <div class="stat-label">Countries/Regions</div>
-                </div>
-            </div>
+      <div class="controls" role="group" aria-label="Calculator controls">
+        <div class="col">
+          <label for="displayCurrency">Display Currency</label>
+          <select id="displayCurrency" aria-label="Select display currency">
+            <option value="USD">USD</option><option value="EUR">EUR</option><option value="AED">AED</option><option value="GBP">GBP</option><option value="INR">INR</option>
+          </select>
         </div>
-    </div>
 
-    <!-- Tab 2: Submit Evidence -->
-    <div id="submit" class="tab-content">
-        <div class="card">
-            <h3>🔍 Submit Your Evidence</h3>
-            <p class="card-description">Found a price disparity? Upload real photos and data from your local stores. Your submission helps build the global database of economic disparities.</p>
-
-            <div class="success-message" id="successMessage">
-                ✅ Thank you! Your submission has been saved to the database.
-            </div>
-
-            <form id="submissionForm" onsubmit="submitEvidence(event)">
-                <div class="two-column">
-                    <div class="form-group">
-                        <label>Your Name/Organization (optional)</label>
-                        <input type="text" id="submitterName" placeholder="e.g., Sarah Ahmed / Independent Researcher">
-                    </div>
-                    <div class="form-group">
-                        <label>Store Location (Country/City)</label>
-                        <input type="text" id="storeLocation" required placeholder="e.g., Dubai, UAE">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Region</label>
-                    <select id="region" required>
-                        <option value="">Select Region</option>
-                        <option value="uae">UAE</option>
-                        <option value="mena">MENA</option>
-                        <option value="asia">Asia</option>
-                        <option value="europe">Europe</option>
-                        <option value="americas">Americas</option>
-                        <option value="africa">Africa</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Product Category</label>
-                    <select id="category" required>
-                        <option value="">Select Category</option>
-                        <option value="personal-care">Personal Care & Grooming</option>
-                        <option value="apparel">Apparel & Dry Cleaning</option>
-                        <option value="toys">Children's Toys & Accessories</option>
-                        <option value="cosmetics">Cosmetics & Beauty</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Product Name/Description</label>
-                    <input type="text" id="productName" required placeholder="e.g., Gillette Razors (Men's vs Women's)">
-                </div>
-
-                <div class="two-column">
-                    <div class="form-group">
-                        <label>Male-Marketed/Standard Price</label>
-                        <input type="number" id="malePrice" required step="0.01" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Female-Marketed Price</label>
-                        <input type="number" id="femalePrice" required step="0.01" placeholder="0.00">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Currency</label>
-                    <select id="currency" required>
-                        <option value="AED">AED (UAE Dirham)</option>
-                        <option value="USD">USD (US Dollar)</option>
-                        <option value="EUR">EUR (Euro)</option>
-                        <option value="GBP">GBP (British Pound)</option>
-                        <option value="INR">INR (Indian Rupee)</option>
-                        <option value="SAR">SAR (Saudi Riyal)</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Store Name/Type</label>
-                    <input type="text" id="storeName" placeholder="e.g., Carrefour, Boots Pharmacy, Department Store">
-                </div>
-
-                <div class="form-group">
-                    <label>Description / Additional Context</label>
-                    <textarea id="description" placeholder="What did you observe? Are the products identical except for gendering? Any relevant context?"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">📤 Submit to Database</button>
-            </form>
+        <div class="col">
+          <label for="calcBase">Base Price</label>
+          <input id="calcBase" type="number" min="0" step="0.01" value="20" />
         </div>
-    </div>
 
-    <!-- Tab 3: Regional Analysis -->
-    <div id="analysis" class="tab-content">
-        <div class="card">
-            <h3>🌍 Regional Pricing Comparison</h3>
-            <p class="card-description">How gender pricing disparities vary by region. This analysis bridges global trends with your local economic reality.</p>
-
-            <table class="regional-table">
-                <thead>
-                    <tr>
-                        <th>Region</th>
-                        <th>Submissions</th>
-                        <th>Avg Markup %</th>
-                        <th>Min - Max Range</th>
-                        <th>Most Common Category</th>
-                    </tr>
-                </thead>
-                <tbody id="regionalTableBody">
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: #586069;">Loading regional data...</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div style="margin-top: 30px; padding: 20px; background: #f6f8fa; border-radius: 6px;">
-                <h4>💡 Key Insight: How Your Region Compares</h4>
-                <p id="regionalInsight" style="color: #586069;">Data loading...</p>
-            </div>
-
-            <div class="methodology">
-                <h4>📊 What This Data Means</h4>
-                <p>The regional analysis shows how gender-based price markups vary geographically. Higher percentages indicate stronger structural disparities in that market. This can reflect:</p>
-                <ul style="margin-top: 10px;">
-                    <li><strong>Market concentration:</strong> Less regulation in certain regions</li>
-                    <li><strong>Consumer awareness:</strong> Markets where pricing transparency is lower</li>
-                    <li><strong>Gender pay gaps:</strong> In areas where women earn less, retailers may charge more (price discrimination)</li>
-                    <li><strong>Supply chain dynamics:</strong> Distribution costs vary by region</li>
-                </ul>
-            </div>
+        <div style="width:160px">
+          <label for="calcBaseQty">Qty (e.g., 250)</label>
+          <input id="calcBaseQty" type="number" min="0" step="0.01" value="250" />
         </div>
-    </div>
 
-    <!-- Tab 4: Calculator -->
-    <div id="calculator" class="tab-content">
-        <div class="card">
-            <h3>🧮 Quick Pink Tax Calculator</h3>
-            <p class="card-description">Understand the true cost of gender pricing with this simple calculator.</p>
-
-            <div class="form-group">
-                <label>Product Name</label>
-                <input type="text" id="calcProductName" placeholder="e.g., Daily-use razors">
-            </div>
-
-            <div class="two-column">
-                <div class="form-group">
-                    <label>Standard/Male-Marketed Price</label>
-                    <input type="number" id="calcStandardPrice" placeholder="0.00" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label>Female-Marketed Price</label>
-                    <input type="number" id="calcFemalePrice" placeholder="0.00" step="0.01">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Currency</label>
-                <select id="calcCurrency">
-                    <option value="AED">AED</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Estimated Annual Purchases</label>
-                <input type="number" id="calcFrequency" value="12" min="1">
-            </div>
-
-            <button class="btn btn-primary" onclick="calculateMarkup()">Calculate Disparity</button>
-
-            <div id="calcResult" class="result-box">
-                <h4>💔 Your Disparity Analysis</h4>
-                <p id="calcDifference"></p>
-                <p id="calcPercentage"></p>
-                <p id="calcAnnual"></p>
-                <p id="calcLifetime" style="margin-top: 15px; font-weight: 600;"></p>
-            </div>
+        <div style="width:160px">
+          <label for="calcBaseUnit">Unit</label>
+          <select id="calcBaseUnit">
+            <option value="ml">ml</option><option value="g">g</option><option value="unit">unit</option><option value="oz">oz</option>
+          </select>
         </div>
-    </div>
 
-</div>
-
-<!-- Footer with Methodology -->
-<div style="background: #f6f8fa; padding: 40px 20px; margin-top: 40px; text-align: center; border-top: 1px solid #e1e4e8;">
-    <div class="container">
-        <div class="methodology">
-            <h4>📚 Research Methodology & Sources</h4>
-            <p>This platform is built on empirical consumer affairs research and policy frameworks:</p>
-            <ol>
-                <li><strong>NYC Department of Consumer Affairs (2015):</strong> Documented the "Pink Tax" across 794 products</li>
-                <li><strong>Comparative Market Analysis:</strong> We control for product specifications, brand, and retail context</li>
-                <li><strong>Crowdsourced Verification:</strong> All submissions are time-stamped and geo-located for transparency</li>
-                <li><strong>Regional Economic Data:</strong> Markups are analyzed against local currency, inflation, and market conditions</li>
-            </ol>
-            <p style="margin-top: 15px; font-size: 0.9rem;"><strong>Your contribution matters:</strong> Every submission adds to the global evidence base. This data has been used by policymakers, economists, and advocacy organizations globally.</p>
+        <div style="align-self:flex-end">
+          <button id="calcReset" class="btn ghost">Reset</button>
         </div>
+      </div>
+
+      <div class="visual" aria-live="polite">
+        <div class="bar-wrap" role="img" aria-label="Visual comparison of base vs marked price">
+          <div id="visBase" class="bar-base" style="width:70%"></div>
+          <div id="visMark" class="bar-mark" style="width:30%"></div>
+        </div>
+
+        <div class="bar-labels">
+          <div><strong id="visBaseLabel">Base: $20.00</strong></div>
+          <div><strong id="visMarkedLabel">Marked: $25.00 (+25.0%)</strong></div>
+        </div>
+
+        <div class="legend">
+          <span class="dot" style="background:var(--good)"></span> Base
+          <span class="dot" style="background:var(--danger)"></span> Markup
+        </div>
+
+        <div class="stats" id="calcStats" style="margin-top:12px">
+          <div class="stat" id="statCount">Entries: 0</div>
+          <div class="stat" id="statAvg">Average markup: 0.0%</div>
+          <div class="stat" id="statUnit">Normalized: —</div>
+        </div>
+      </div>
     </div>
-</div>
 
-<script>
-    // ===== DATA MANAGEMENT =====
-    const DATABASE_KEY = 'pinkTaxDatabase';
-    
-    function initializeDatabase() {
-        if (!localStorage.getItem(DATABASE_KEY)) {
-            const sampleData = [
-                {
-                    id: 1,
-                    submitterName: 'Dr. Aisha Al-Maktoum',
-                    storeLocation: 'Dubai, UAE',
-                    region: 'uae',
-                    category: 'personal-care',
-                    productName: 'Gillette Razors (Fusion)',
-                    malePrice: 45,
-                    femalePrice: 65,
-                    currency: 'AED',
-                    storeName: 'Carrefour',
-                    description: 'Identical product, only difference is packaging color (blue vs pink)',
-                    markup: 44.44,
-                    timestamp: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    submitterName: 'Anonymous',
-                    storeLocation: 'Abu Dhabi, UAE',
-                    region: 'uae',
-                    category: 'cosmetics',
-                    productName: 'Deodorant Spray',
-                    malePrice: 25,
-                    femalePrice: 38,
-                    currency: 'AED',
-                    storeName: 'Boots',
-                    description: 'Men\'s and women\'s versions have same ml but different prices',
-                    markup: 52,
-                    timestamp: new Date().toISOString()
-                },
-                {
-                    id: 3,
-                    submitterName: 'Sarah Johnson',
-                    storeLocation: 'London, UK',
-                    region: 'europe',
-                    category: 'personal-care',
-                    productName: 'Body Wash',
-                    malePrice: 3.50,
-                    femalePrice: 4.50,
-                    currency: 'GBP',
-                    storeName: 'Boots Pharmacy',
-                    description: 'Exact same formula and brand, different product lines',
-                    markup: 28.57,
-                    timestamp: new Date().toISOString()
-                },
-                {
-                    id: 4,
-                    submitterName: 'Priya Sharma',
-                    storeLocation: 'Mumbai, India',
-                    region: 'asia',
-                    category: 'toys',
-                    productName: 'Construction Play Set',
-                    malePrice: 299,
-                    femalePrice: 449,
-                    currency: 'INR',
-                    storeName: 'Hamleys',
-                    description: 'Pink vs blue versions of same building blocks - girls version costs 50% more',
-                    markup: 50,
-                    timestamp: new Date().toISOString()
-                }
-            ];
-            localStorage.setItem(DATABASE_KEY, JSON.stringify(sampleData));
-        }
-    }
+    <div class="card" id="evidenceCard" aria-labelledby="evidenceTitle">
+      <h2 id="evidenceTitle">Submit Evidence (MVP: personal care, apparel, children)</h2>
+      <p class="small">Strict equivalence enforced: submissions must pass at least 2 objective checks (quantity/unit, composition/materials, manufacturing/features). Images are processed client-side to strip EXIF and downscale for privacy.</p>
 
-    function getDatabase() {
-        return JSON.parse(localStorage.getItem(DATABASE_KEY)) || [];
-    }
+      <div class="row" style="margin-top:12px;">
+        <div style="flex:2;min-width:200px">
+          <label for="entryProduct">Product name</label>
+          <input id="entryProduct" type="text" placeholder="e.g., Gentle Care Shampoo 250ml" />
+        </div>
 
-    function addSubmission(submission) {
-        const db = getDatabase();
-        submission.id = db.length > 0 ? Math.max(...db.map(s => s.id)) + 1 : 1;
-        submission.markup = ((submission.femalePrice - submission.malePrice) / submission.malePrice) * 100;
-        submission.timestamp = new Date().toISOString();
-        db.push(submission);
-        localStorage.setItem(DATABASE_KEY, JSON.stringify(db));
-        return submission;
-    }
+        <div style="width:160px">
+          <label for="entryCategory">Category</label>
+          <select id="entryCategory">
+            <option value="personal_care">Personal care</option>
+            <option value="apparel">Apparel</option>
+            <option value="children">Children's products</option>
+          </select>
+        </div>
 
-    // ===== TAB SWITCHING =====
-    function switchTab(event, tabName) {
-        // Hide all tabs
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        
-        // Deactivate all buttons
-        const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        
-        // Show selected tab
-        document.getElementById(tabName).classList.add('active');
-        event.target.classList.add('active');
+        <div style="width:140px">
+          <label for="entryBrand">Brand (optional)</label>
+          <input id="entryBrand" type="text" placeholder="Brand name" />
+        </div>
+      </div>
 
-        // Load tab-specific content
-        if (tabName === 'audit') {
-            loadDatabase();
-        } else if (tabName === 'analysis') {
-            loadRegionalAnalysis();
-        }
-    }
+      <div class="row" style="margin-top:10px">
+        <div style="width:140px">
+          <label for="entryBasePrice">Base Price</label>
+          <input id="entryBasePrice" type="number" min="0" step="0.01" />
+        </div>
+        <div style="width:140px">
+          <label for="entryMarkedPrice">Marked Price</label>
+          <input id="entryMarkedPrice" type="number" min="0" step="0.01" />
+        </div>
+        <div style="width:100px">
+          <label for="entryQty">Quantity</label>
+          <input id="entryQty" type="number" min="0" step="0.01" />
+        </div>
+        <div style="width:120px">
+          <label for="entryUnit">Unit</label>
+          <select id="entryUnit">
+            <option value="ml">ml</option><option value="l">L</option><option value="g">g</option><option value="kg">kg</option><option value="unit">unit</option><option value="pack">pack</option>
+          </select>
+        </div>
+        <div style="width:140px">
+          <label for="entryCurrency">Currency</label>
+          <select id="entryCurrency"><option>USD</option><option>EUR</option><option>AED</option><option>GBP</option><option>INR</option></select>
+        </div>
+      </div>
 
-    // ===== DATABASE DISPLAY =====
-    function loadDatabase() {
-        const db = getDatabase();
-        const container = document.getElementById('databaseContainer');
-        
-        if (db.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: #586069;">No submissions yet. Be the first to submit evidence!</p>';
-            return;
-        }
+      <div style="margin-top:10px" class="row">
+        <div style="flex:1;min-width:220px">
+          <label for="entryStore">Store / Region</label>
+          <input id="entryStore" type="text" placeholder="e.g., Carrefour, Dubai Mall" />
+        </div>
+        <div style="width:160px">
+          <label for="entryCity">City</label>
+          <input id="entryCity" type="text" placeholder="City" />
+        </div>
+        <div style="width:160px">
+          <label for="entryCountry">Country (ISO)</label>
+          <input id="entryCountry" type="text" placeholder="e.g., AE, US" />
+        </div>
+        <div style="width:160px">
+          <label for="entryDate">Date found</label>
+          <input id="entryDate" type="date" />
+        </div>
+      </div>
 
-        // Update stats
-        const avgMarkup = (db.reduce((sum, s) => sum + s.markup, 0) / db.length).toFixed(1);
-        const maxMarkup = Math.max(...db.map(s => s.markup)).toFixed(1);
-        const uniqueRegions = new Set(db.map(s => s.region)).size;
+      <div style="margin-top:10px">
+        <label for="entrySale">Sale status</label>
+        <select id="entrySale"><option value="regular">Regular</option><option value="promo">Promotion</option><option value="clearance">Clearance</option></select>
+      </div>
 
-        document.getElementById('totalSubmissions').textContent = db.length;
-        document.getElementById('avgMarkup').textContent = avgMarkup + '%';
-        document.getElementById('maxMarkup').textContent = maxMarkup + '%';
-        document.getElementById('regionCount').textContent = uniqueRegions;
+      <div class="equivalence">
+        <strong>Strict equivalence checklist (objective metrics)</strong>
+        <p class="small">Comparisons must be based on objective, reproducible attributes. Choose at least two.</p>
+        <label><input type="checkbox" id="eq_quantity" /> Same net quantity and unit (e.g., both 250 ml)</label><br>
+        <label><input type="checkbox" id="eq_composition" /> Same primary ingredients / materials (e.g., active ingredient, fabric)</label><br>
+        <label><input type="checkbox" id="eq_manufacturing" /> Same manufacturing features (e.g., refillable, volume, unit count, intended use)</label>
+      </div>
 
-        // Display submissions
-        const html = db.map(submission => `
-            <div class="submission-item">
-                <div class="submission-header">
-                    <div class="submission-title">${submission.productName}</div>
-                </div>
-                <div class="submission-meta">
-                    <span class="badge region">📍 ${submission.storeLocation}</span>
-                    <span class="badge category">${getCategoryLabel(submission.category)}</span>
-                    <span class="badge" style="background: #fff3cd; color: #856404;">💰 ${submission.markup.toFixed(1)}% markup</span>
-                </div>
-                <p style="margin: 10px 0; color: #24292e;"><strong>${submission.malePrice} ${submission.currency}</strong> (standard) vs <strong>${submission.femalePrice} ${submission.currency}</strong> (female-marketed)</p>
-                <p style="color: #586069; font-size: 0.9rem;">${submission.description}</p>
-                <p style="margin-top: 10px; font-size: 0.8rem; color: #a0a0a0;">Submitted by ${submission.submitterName || 'Anonymous'} • ${new Date(submission.timestamp).toLocaleDateString()}</p>
-            </div>
-        `).join('');
+      <div style="margin-top:10px" class="row">
+        <div style="min-width:220px">
+          <label for="entryEvidence">Evidence image (receipt or shelf tag, optional)</label>
+          <input id="entryEvidence" type="file" accept="image/*" />
+          <div class="small">Images are processed client-side: EXIF is stripped and image is downscaled to protect privacy. Do not upload personal ID photos.</div>
+        </div>
+        <div style="min-width:180px">
+          <label>Preview</label><br>
+          <img id="entryPreview" class="img-preview" alt="preview" />
+        </div>
+      </div>
 
-        container.innerHTML = html;
-    }
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+        <button id="submitEntry" class="btn">Add Entry</button>
+        <button id="clearForm" class="btn ghost">Clear Form</button>
+        <div class="small" style="margin-left:8px;color:var(--muted)">LocalStorage key: <strong>gpte_entries_v1</strong></div>
+      </div>
 
-    function getCategoryLabel(cat) {
-        const labels = {
-            'personal-care': '🧴 Personal Care',
-            'apparel': '👕 Apparel',
-            'toys': '🧸 Toys',
-            'cosmetics': '💄 Cosmetics',
-            'other': '📦 Other'
-        };
-        return labels[cat] || cat;
-    }
+      <div class="controls-bottom" style="margin-top:12px">
+        <button id="clearAll" class="btn ghost">Clear all local entries</button>
+        <button id="exportCSV" class="btn ghost">Export CSV</button>
+        <label class="small" for="importCSV">Import CSV:</label>
+        <input id="importCSV" type="file" accept=".csv" />
+      </div>
 
-    function filterDatabase() {
-        const category = document.getElementById('filterCategory').value;
-        const region = document.getElementById('filterRegion').value;
-        const minMarkup = parseFloat(document.getElementById('filterMarkup').value) || 0;
+      <div class="table-wrap">
+        <table id="evidenceTable" aria-describedby="evidenceTitle">
+          <thead>
+            <tr>
+              <th>Product</th><th>Category</th><th>Qty</th><th>Base</th><th>Marked</th><th>Unit price</th><th>Markup %</th><th>Location</th><th>Date</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-        let db = getDatabase();
-        db = db.filter(s => {
-            if (category && s.category !== category) return false;
-            if (region && s.region !== region) return false;
-            if (s.markup < minMarkup) return false;
-            return true;
-        });
+    </div>
 
-        const container = document.getElementById('databaseContainer');
-        if (db.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: #586069;">No submissions match your filters. Try adjusting your search.</p>';
-            return;
-        }
+  </div>
 
-        const html = db.map(submission => `
-            <div class="submission-item">
-                <div class="submission-header">
-                    <div class="submission-title">${submission.productName}</div>
-                </div>
-                <div class="submission-meta">
-                    <span class="badge region">📍 ${submission.storeLocation}</span>
-                    <span class="badge category">${getCategoryLabel(submission.category)}</span>
-                    <span class="badge" style="background: #fff3cd; color: #856404;">💰 ${submission.markup.toFixed(1)}% markup</span>
-                </div>
-                <p style="margin: 10px 0; color: #24292e;"><strong>${submission.malePrice} ${submission.currency}</strong> (standard) vs <strong>${submission.femalePrice} ${submission.currency}</strong> (female-marketed)</p>
-                <p style="color: #586069; font-size: 0.9rem;">${submission.description}</p>
-                <p style="margin-top: 10px; font-size: 0.8rem; color: #a0a0a0;">Submitted by ${submission.submitterName || 'Anonymous'} • ${new Date(submission.timestamp).toLocaleDateString()}</p>
-            </div>
-        `).join('');
+  <script>
+    // LocalStorage key
+    const LS_KEY = 'gpte_entries_v1';
 
-        container.innerHTML = html;
-    }
+    // Elements
+    const displayCurrency = document.getElementById('displayCurrency');
+    const calcBase = document.getElementById('calcBase');
+    const calcBaseQty = document.getElementById('calcBaseQty');
+    const calcBaseUnit = document.getElementById('calcBaseUnit');
+    const calcReset = document.getElementById('calcReset');
+    const visBase = document.getElementById('visBase');
+    const visMark = document.getElementById('visMark');
+    const visBaseLabel = document.getElementById('visBaseLabel');
+    const visMarkedLabel = document.getElementById('visMarkedLabel');
+    const statCount = document.getElementById('statCount');
+    const statAvg = document.getElementById('statAvg');
+    const statUnit = document.getElementById('statUnit');
 
-    // ===== SUBMISSION FORM =====
-    function submitEvidence(event) {
-        event.preventDefault();
+    const entryProduct = document.getElementById('entryProduct');
+    const entryCategory = document.getElementById('entryCategory');
+    const entryBrand = document.getElementById('entryBrand');
+    const entryBasePrice = document.getElementById('entryBasePrice');
+    const entryMarkedPrice = document.getElementById('entryMarkedPrice');
+    const entryQty = document.getElementById('entryQty');
+    const entryUnit = document.getElementById('entryUnit');
+    const entryCurrency = document.getElementById('entryCurrency');
+    const entryStore = document.getElementById('entryStore');
+    const entryCity = document.getElementById('entryCity');
+    const entryCountry = document.getElementById('entryCountry');
+    const entryDate = document.getElementById('entryDate');
+    const entrySale = document.getElementById('entrySale');
+    const eq_quantity = document.getElementById('eq_quantity');
+    const eq_composition = document.getElementById('eq_composition');
+    const eq_manufacturing = document.getElementById('eq_manufacturing');
 
-        const submission = {
-            submitterName: document.getElementById('submitterName').value,
-            storeLocation: document.getElementById('storeLocation').value,
-            region: document.getElementById('region').value,
-            category: document.getElementById('category').value,
-            productName: document.getElementById('productName').value,
-            malePrice: parseFloat(document.getElementById('malePrice').value),
-            femalePrice: parseFloat(document.getElementById('femalePrice').value),
-            currency: document.getElementById('currency').value,
-            storeName: document.getElementById('storeName').value,
-            description: document.getElementById('description').value
-        };
+    const entryEvidence = document.getElementById('entryEvidence');
+    const entryPreview = document.getElementById('entryPreview');
 
-        addSubmission(submission);
+    const submitEntry = document.getElementById('submitEntry');
+    const clearForm = document.getElementById('clearForm');
+    const clearAll = document.getElementById('clearAll');
+    const exportCSV = document.getElementById('exportCSV');
+    const importCSV = document.getElementById('importCSV');
 
-        // Show success message
-        const successMsg = document.getElementById('successMessage');
-        successMsg.classList.add('show');
-        setTimeout(() => successMsg.classList.remove('show'), 5000);
+    const evidenceTableBody = document.querySelector('#evidenceTable tbody');
 
-        // Reset form
-        document.getElementById('submissionForm').reset();
+    // Simple currency rates (static). Replace with API if you want dynamic conversions.
+    const EXAMPLE_RATES = { USD:1, EUR:0.92, AED:3.67, GBP:0.80, INR:83.0 };
 
-        // Refresh database display
-        loadDatabase();
-    }
-
-    // ===== CALCULATOR =====
-    function calculateMarkup() {
-        const standardPrice = parseFloat(document.getElementById('calcStandardPrice').value);
-        const femalePrice = parseFloat(document.getElementById('calcFemalePrice').value);
-        const frequency = parseInt(document.getElementById('calcFrequency').value) || 1;
-        const productName = document.getElementById('calcProductName').value || 'This product';
-        const currency = document.getElementById('calcCurrency').value;
-
-        if (isNaN(standardPrice) || isNaN(femalePrice) || standardPrice <= 0 || femalePrice <= 0) {
-            alert('Please enter valid prices.');
-            return;
-        }
-
-        const difference = femalePrice - standardPrice;
-        const percentage = (difference / standardPrice) * 100;
-        const annual = difference * frequency;
-        const lifetime = annual * 50; // Assume 50 years of purchasing
-
-        document.getElementById('calcDifference').innerText = `Price Difference: ${currency} ${difference.toFixed(2)} per item`;
-        document.getElementById('calcPercentage').innerText = `Markup: ${percentage.toFixed(1)}%`;
-        document.getElementById('calcAnnual').innerText = `Annual Overspend: ${currency} ${annual.toFixed(2)} (at ${frequency} purchases/year)`;
-        document.getElementById('calcLifetime').innerText = `💰 Lifetime Cost of Pink Tax: ${currency} ${lifetime.toFixed(2)} (estimated over 50 years)`;
-
-        document.getElementById('calcResult').classList.add('success');
-    }
-
-    // ===== REGIONAL ANALYSIS =====
-    function loadRegionalAnalysis() {
-        const db = getDatabase();
-        const regionData = {};
-
-        db.forEach(submission => {
-            if (!regionData[submission.region]) {
-                regionData[submission.region] = {
-                    submissions: [],
-                    markups: [],
-                    categories: {}
-                };
-            }
-            regionData[submission.region].submissions.push(submission);
-            regionData[submission.region].markups.push(submission.markup);
-            regionData[submission.region].categories[submission.category] = (regionData[submission.region].categories[submission.category] || 0) + 1;
-        });
-
-        const tbody = document.getElementById('regionalTableBody');
-        const rows = Object.entries(regionData).map(([region, data]) => {
-            const avgMarkup = (data.markups.reduce((a, b) => a + b, 0) / data.markups.length).toFixed(1);
-            const minMarkup = Math.min(...data.markups).toFixed(1);
-            const maxMarkup = Math.max(...data.markups).toFixed(1);
-            const mostCommon = Object.entries(data.categories).sort((a, b) => b[1] - a[1])[0];
-
-            return `
-                <tr>
-                    <td>${region.toUpperCase()}</td>
-                    <td>${data.submissions.length}</td>
-                    <td>${avgMarkup}%</td>
-                    <td>${minMarkup}% - ${maxMarkup}%</td>
-                    <td>${getCategoryLabel(mostCommon[0])}</td>
-                </tr>
-            `;
-        }).join('');
-
-        tbody.innerHTML = rows || '<tr><td colspan="5" style="text-align: center; color: #586069;">No regional data available yet.</td></tr>';
-
-        // Update insight
-        const highestRegion = Object.entries(regionData).reduce((a, b) => {
-            const aAvg = b[1].markups.reduce((x, y) => x + y, 0) / b[1].markups.length;
-            const bAvg = a[1].markups.reduce((x, y) => x + y, 0) / a[1].markups.length;
-            return aAvg > bAvg ? b : a;
-        });
-
-        document.getElementById('regionalInsight').innerText = `The highest average gender pricing disparity is in ${highestRegion[0].toUpperCase()} at ${(highestRegion[1].markups.reduce((a, b) => a + b, 0) / highestRegion[1].markups.length).toFixed(1)}%. This suggests regional differences in market regulation and consumer awareness.`;
-    }
-
-    // ===== INITIALIZATION =====
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeDatabase();
-        loadDatabase();
-    });
-</script>
-
-</body>
-</html>
+    // Utilities
+    function esc(s){ return (s+'').replace(/[&<>\
