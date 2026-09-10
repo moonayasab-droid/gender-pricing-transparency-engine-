@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gender Pricing Transparency Engine | Pink Tax Calculator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f6f8;
+            color: #24292e;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e1e4e8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .calculator-container h2 {
+            margin-top: 0;
+            color: #1f2328;
+        }
+        .calculator-card label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #24292e;
+        }
+        .calculator-card input, .calculator-card select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #d1d5da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        #calculate-pink-tax-btn {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #0366d6;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #calculate-pink-tax-btn:hover {
+            background-color: #0056b3;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e6f4ea;
+            border: 1px solid #ceead6;
+            border-radius: 6px;
+            color: #137333;
+            display: none;
+        }
+      .methodology-note {
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: #586069;
+            border-top: 1px solid #eaecef;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="calculator-container">
+        <h2>Gender Pricing Transparency Engine</h2>
+        <p>Quantify economic disparities and price markups on gender-marketed consumer goods using empirical consumer affairs frameworks.</p>
+        
+        <div class="calculator-card">
+            <label for="category">Product Category:</label>
+            <select id="category">
+                <option value="personal-care">Personal Care & Grooming</option>
+                <option value="apparel">Apparel & Dry Cleaning</option>
+                <option value="toys">Children's Toys & Accessories</option>
+            </select>
+
+            <label for="itemName">Item Name / Description:</label>
+            <input type="text" id="itemName" placeholder="e.g., Razors / Body Wash">
+
+            <label for="standardPrice">Standard / Male-Marketed Price (AED):</label>
+            <input type="number" id="standardPrice" placeholder="0.00" step="0.01">
+
+            <label for="femalePrice">Female-Marketed Price (AED):</label>
+            <input type="number" id="femalePrice" placeholder="0.00" step="0.01">
+
+            <label for="frequency">Estimated Annual Purchases:</label>
+            <input type="number" id="frequency" value="12" min="1">
+
+            <button id="calculate-pink-tax-btn">Calculate Pink Tax</button>
+        </div>
+
+        <div id="pink-tax-result" class="result-box">
+            <h3>Disparity Audit Report</h3>
+            <p id="res-difference"></p>
+            <p id="res-percentage"></p>
+            <p id="res-annual"></p>
+        </div>
+        <div class="methodology-note">
+            <strong>Methodology Note:</strong> This interactive tool calculates price premiums based on comparative market methodologies derived from public consumer policy studies (e.g., NYC Department of Consumer Affairs gender pricing research).
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calcBtn = document.getElementById('calculate-pink-tax-btn');
+            
+            if (calcBtn) {
+                calcBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+
+                    const standardPrice = parseFloat(document.getElementById('standardPrice').value);
+                    const femalePrice = parseFloat(document.getElementById('femalePrice').value);
+                    const frequency = parseInt(document.getElementById('frequency').value) || 1;
+                    const resultBox = document.getElementById('pink-tax-result');
+
+                    if (isNaN(standardPrice) || isNaN(femalePrice) || standardPrice <= 0 || femalePrice <= 0) {
+                        alert("Please enter valid positive numbers for both prices.");
+                        return;
+                    }
+
+                    const priceDifference = femalePrice - standardPrice;
+                    const markupPercentage = (priceDifference / standardPrice) * 100;
+                    const annualOverspend = priceDifference * frequency;
+
+                    document.getElementById('res-difference').innerText = `Absolute Price Difference: AED ${priceDifference.toFixed(2)}`;
+                    document.getElementById('res-percentage').innerText = `Pink Tax Markup: ${markupPercentage.toFixed(1)}%`;
+                    document.getElementById('res-annual').innerText = `Projected Annual Overspend: AED ${annualOverspend.toFixed(2)}`;
+
+                    resultBox.style.display = 'block';
+                  });
+            }
+        });
+    </script>
+</body>
+</html>
