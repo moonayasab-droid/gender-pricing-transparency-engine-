@@ -1,1 +1,1 @@
-⁠# ⚖️ Justice Glove: Wearable Human-Computer Interface⁠
+⁠#⚖️ Justice Glove: Wearable Human-Computer Interface⁠
