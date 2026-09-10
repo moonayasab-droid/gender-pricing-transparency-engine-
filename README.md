@@ -1,2 +1,1 @@
-# gender-pricing-transparency-engine-
-pink tax 
+⁠# ⚖️ Justice Glove: Wearable Human-Computer Interface⁠
