@@ -70,7 +70,7 @@
 
     /* Status badges: confirmed green, unverified muted gray, disputed rose tint */
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:0.8rem}
-    .badge.unverified{background:#f1f5f9;color:#475569;border:1px solid var(--slate-border}
+    .badge.unverified{background:#f1f5f9;color:#475569;border:1px solid var(--slate-border)}
     .badge.confirmed{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
     .badge.disputed{background:#fff1f2;color:#861b27;border:1px solid #ffd6de}
 
@@ -150,7 +150,7 @@
 
     <div class="card" id="evidenceCard" aria-labelledby="evidenceTitle">
       <h2 id="evidenceTitle">Submit Evidence (MVP: personal care, apparel, children)</h2>
-      <p class="small">Strict equivalence enforced: submissions must pass at least 2 objective checks (quantity/unit, composition/materials, manufacturing/features). Images are processed client-s[...]</p>
+      <p class="small">Strict equivalence enforced: submissions must pass at least 2 objective checks (quantity/unit, composition/materials, manufacturing/features). Images are processed client-side: EXIF is stripped, image is downscaled to protect privacy.</p>
 
       <div class="row" style="margin-top:12px;">
         <div style="flex:2;min-width:200px">
@@ -320,15 +320,294 @@
     const EXAMPLE_RATES = { USD:1, EUR:0.92, AED:3.67, GBP:0.80, INR:83.0 };
 
     // Utilities
-    function esc(s){ return (s+'').replace(/[&<>\"'`]/g,'') }
+    function esc(s){ return (s+'').replace(/[&<>"'`]/g,'') }
 
-    function formatCurrency(v,cur='USD'){
-      const rate = EXAMPLE_RATES[cur]||1; // simple
-      return (v*rate).toLocaleString(undefined,{style:'currency',currency:cur});
+    function formatCurrency(v, cur='USD'){
+      const rate = EXAMPLE_RATES[cur] || 1;
+      return (v * rate).toLocaleString(undefined, {style:'currency', currency:cur});
     }
 
-    // Remaining script unchanged (truncated for brevity) — the visual/theme-only changes were applied to CSS/hero text.
+    // Load entries from localStorage
+    function loadEntries(){
+      const data = localStorage.getItem(LS_KEY);
+      return data ? JSON.parse(data) : [];
+    }
 
+    // Save entries to localStorage
+    function saveEntries(entries){
+      localStorage.setItem(LS_KEY, JSON.stringify(entries));
+      console.log('[SAVE] Entries saved to localStorage:', entries);
+    }
+
+    // Render table from entries
+    function renderTable(){
+      const entries = loadEntries();
+      evidenceTableBody.innerHTML = '';
+      
+      entries.forEach((entry, idx) => {
+        const unitPrice = entry.entryQty > 0 ? entry.entryBasePrice / entry.entryQty : 0;
+        const markupPct = entry.entryBasePrice > 0 ? ((entry.entryMarkedPrice - entry.entryBasePrice) / entry.entryBasePrice * 100) : 0;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${esc(entry.entryProduct)}</td>
+          <td>${entry.entryCategory}</td>
+          <td>${entry.entryQty} ${entry.entryUnit}</td>
+          <td>${formatCurrency(entry.entryBasePrice, entry.entryCurrency)}</td>
+          <td>${formatCurrency(entry.entryMarkedPrice, entry.entryCurrency)}</td>
+          <td>${formatCurrency(unitPrice, entry.entryCurrency)}</td>
+          <td>${markupPct.toFixed(1)}%</td>
+          <td>${esc(entry.entryStore)}</td>
+          <td>${entry.entryDate || '—'}</td>
+          <td><span class="badge unverified">Unverified</span></td>
+          <td class="actions">
+            <button class="btn ghost" onclick="deleteEntry(${idx})">Delete</button>
+          </td>
+        `;
+        evidenceTableBody.appendChild(row);
+      });
+      
+      updateStats();
+    }
+
+    // Delete entry by index
+    function deleteEntry(idx){
+      const entries = loadEntries();
+      entries.splice(idx, 1);
+      saveEntries(entries);
+      renderTable();
+      console.log('[DELETE] Entry removed. Remaining:', entries.length);
+    }
+
+    // Update stats
+    function updateStats(){
+      const entries = loadEntries();
+      const count = entries.length;
+      const avgMarkup = count > 0 
+        ? (entries.reduce((sum, e) => {
+            const mp = e.entryBasePrice > 0 ? ((e.entryMarkedPrice - e.entryBasePrice) / e.entryBasePrice * 100) : 0;
+            return sum + mp;
+          }, 0) / count)
+        : 0;
+      
+      statCount.textContent = `Entries: ${count}`;
+      statAvg.textContent = `Average markup: ${avgMarkup.toFixed(1)}%`;
+      statUnit.textContent = `Normalized: ${count} entries`;
+    }
+
+    // Validate equivalence (at least 2 checks)
+    function validateEquivalence(){
+      const checks = [eq_quantity.checked, eq_composition.checked, eq_manufacturing.checked];
+      const numChecks = checks.filter(c => c === true).length;
+      
+      if(numChecks < 2){
+        console.warn('[VALIDATION] Equivalence requires at least 2 checks. Got:', numChecks);
+        return false;
+      }
+      return true;
+    }
+
+    // Submit entry
+    function handleSubmitEntry(){
+      console.log('[SUBMIT] Button clicked.');
+      
+      // Validate equivalence
+      if(!validateEquivalence()){
+        alert('Strict equivalence requires at least 2 objective checks.');
+        return;
+      }
+
+      // Validate required fields
+      if(!entryProduct.value || !entryBasePrice.value || !entryMarkedPrice.value || !entryQty.value){
+        alert('Please fill in all required fields (Product, Base Price, Marked Price, Quantity).');
+        return;
+      }
+
+      const entry = {
+        entryProduct: entryProduct.value,
+        entryCategory: entryCategory.value,
+        entryBrand: entryBrand.value,
+        entryBasePrice: parseFloat(entryBasePrice.value),
+        entryMarkedPrice: parseFloat(entryMarkedPrice.value),
+        entryQty: parseFloat(entryQty.value),
+        entryUnit: entryUnit.value,
+        entryCurrency: entryCurrency.value,
+        entryStore: entryStore.value,
+        entryCity: entryCity.value,
+        entryCountry: entryCountry.value,
+        entryDate: entryDate.value,
+        entrySale: entrySale.value,
+        timestamp: new Date().toISOString()
+      };
+
+      const entries = loadEntries();
+      entries.push(entry);
+      saveEntries(entries);
+      
+      console.log('[SUCCESS] Entry added:', entry);
+      alert('Entry saved successfully!');
+      
+      // Reset form
+      resetForm();
+      renderTable();
+    }
+
+    // Clear form
+    function resetForm(){
+      entryProduct.value = '';
+      entryCategory.value = 'personal_care';
+      entryBrand.value = '';
+      entryBasePrice.value = '';
+      entryMarkedPrice.value = '';
+      entryQty.value = '';
+      entryUnit.value = 'ml';
+      entryCurrency.value = 'USD';
+      entryStore.value = '';
+      entryCity.value = '';
+      entryCountry.value = '';
+      entryDate.value = '';
+      entrySale.value = 'regular';
+      eq_quantity.checked = false;
+      eq_composition.checked = false;
+      eq_manufacturing.checked = false;
+      entryEvidence.value = '';
+      entryPreview.src = '';
+      console.log('[RESET] Form cleared.');
+    }
+
+    // Clear all entries
+    function handleClearAll(){
+      if(confirm('Delete ALL entries from localStorage? This cannot be undone.')){
+        localStorage.removeItem(LS_KEY);
+        evidenceTableBody.innerHTML = '';
+        updateStats();
+        console.log('[CLEAR_ALL] All entries deleted.');
+      }
+    }
+
+    // Export CSV
+    function handleExportCSV(){
+      const entries = loadEntries();
+      if(entries.length === 0){
+        alert('No entries to export.');
+        return;
+      }
+      
+      const headers = ['Product', 'Category', 'Brand', 'Base Price', 'Marked Price', 'Qty', 'Unit', 'Currency', 'Store', 'City', 'Country', 'Date', 'Sale Status', 'Timestamp'];
+      const rows = entries.map(e => [
+        e.entryProduct, e.entryCategory, e.entryBrand, e.entryBasePrice, e.entryMarkedPrice,
+        e.entryQty, e.entryUnit, e.entryCurrency, e.entryStore, e.entryCity, e.entryCountry,
+        e.entryDate, e.entrySale, e.timestamp
+      ]);
+      
+      const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gpte_entries.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      console.log('[EXPORT] CSV exported with', entries.length, 'entries.');
+    }
+
+    // Import CSV (basic parser)
+    function handleImportCSV(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const csv = evt.target.result;
+        const lines = csv.split('\n').filter(l => l.trim());
+        if(lines.length < 2){
+          alert('CSV must have header row + at least 1 data row.');
+          return;
+        }
+        
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+        const entries = [];
+        
+        for(let i = 1; i < lines.length; i++){
+          const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+          if(values.length < 14) continue;
+          
+          entries.push({
+            entryProduct: values[0],
+            entryCategory: values[1],
+            entryBrand: values[2],
+            entryBasePrice: parseFloat(values[3]),
+            entryMarkedPrice: parseFloat(values[4]),
+            entryQty: parseFloat(values[5]),
+            entryUnit: values[6],
+            entryCurrency: values[7],
+            entryStore: values[8],
+            entryCity: values[9],
+            entryCountry: values[10],
+            entryDate: values[11],
+            entrySale: values[12],
+            timestamp: values[13]
+          });
+        }
+        
+        if(entries.length > 0){
+          if(confirm(`Import ${entries.length} entries? They will be added to existing data.`)){
+            const existing = loadEntries();
+            saveEntries([...existing, ...entries]);
+            renderTable();
+            console.log('[IMPORT] Imported', entries.length, 'entries.');
+            alert(`Imported ${entries.length} entries successfully!`);
+          }
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Image preview
+    entryEvidence.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if(file){
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          entryPreview.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Event Listeners
+    submitEntry.addEventListener('click', handleSubmitEntry);
+    clearForm.addEventListener('click', resetForm);
+    clearAll.addEventListener('click', handleClearAll);
+    exportCSV.addEventListener('click', handleExportCSV);
+    importCSV.addEventListener('change', handleImportCSV);
+
+    // Calculator logic
+    function updateCalcVisual(){
+      const base = parseFloat(calcBase.value) || 20;
+      const marked = base * 1.25; // Example: 25% markup
+      const total = base + marked;
+      
+      const baseWidthPct = (base / total) * 100;
+      const markWidthPct = (marked / total) * 100;
+      
+      visBase.style.width = baseWidthPct + '%';
+      visMark.style.width = markWidthPct + '%';
+      visBaseLabel.textContent = `Base: ${formatCurrency(base, displayCurrency.value)}`;
+      visMarkedLabel.textContent = `Marked: ${formatCurrency(marked, displayCurrency.value)} (+25.0%)`;
+    }
+
+    calcBase.addEventListener('input', updateCalcVisual);
+    displayCurrency.addEventListener('change', updateCalcVisual);
+    calcReset.addEventListener('click', () => {
+      calcBase.value = '20';
+      calcBaseQty.value = '250';
+      updateCalcVisual();
+    });
+
+    // Initial render
+    renderTable();
+    updateCalcVisual();
   </script>
 </body>
 </html>
