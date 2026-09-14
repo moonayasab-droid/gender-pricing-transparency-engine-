@@ -32,6 +32,35 @@
     h2{margin:0 0 8px 0;color:#0f172a}
     p.lead{margin:0;color:var(--muted);font-size:0.95rem}
 
+    /* How-to guide banner */
+    #howToGuide{background:linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%);border-left:4px solid var(--accent);margin-bottom:18px}
+    #howToGuide h2{color:#881e50;font-size:1.1rem;margin-bottom:12px}
+    
+    .guide-section{margin-bottom:14px}
+    .guide-section:last-child{margin-bottom:0}
+    
+    .guide-step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start}
+    .guide-step-number{
+      flex-shrink:0;
+      width:32px;
+      height:32px;
+      background:var(--accent);
+      color:#fff;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:0.95rem;
+    }
+    
+    .guide-step-content{flex:1}
+    .guide-step-content strong{color:#0f172a;display:block;margin-bottom:4px}
+    .guide-step-content .hint{color:var(--muted);font-size:0.9rem;margin-top:4px;font-style:italic}
+    
+    .toggle-guide{background:transparent;border:none;color:var(--accent);font-size:0.85rem;cursor:pointer;text-decoration:underline;margin-top:8px;padding:0}
+    .toggle-guide:hover{color:#881e50}
+
     .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;align-items:end}
     label{font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px}
     input[type="number"], input[type="text"], select, input[type="file"], textarea{
@@ -81,6 +110,8 @@
       .controls{flex-direction:column;align-items:stretch}
       .row{flex-direction:column}
       .stats{flex-direction:column}
+      #howToGuide{padding:16px}
+      .guide-step{gap:10px}
     }
   </style>
 </head>
@@ -89,6 +120,60 @@
     <div class="card" id="hero">
       <h1>Gender Pricing Transparency Engine</h1>
       <p class="lead">An empirical research utility for measuring price differentials by gendered product labeling — local-first evidence collection and unit-normalized analysis.</p>
+    </div>
+
+    <!-- NEW: How-to Guide Banner -->
+    <div class="card" id="howToGuide" aria-labelledby="guideTitle">
+      <h2 id="guideTitle">📋 Quick Start Guide</h2>
+      
+      <div class="guide-section">
+        <div class="guide-step">
+          <div class="guide-step-number">1</div>
+          <div class="guide-step-content">
+            <strong>Use the Calculator to visualize markups</strong>
+            <p class="small">Adjust the Base Price in the "Calculator & Visual" section above to see how price differences add up. This is just for exploration.</p>
+            <div class="hint">💡 Example: Set base to $20 and see the 25% markup visualized</div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-number">2</div>
+          <div class="guide-step-content">
+            <strong>Submit your price comparison evidence</strong>
+            <p class="small">Find two equivalent products (e.g., male vs. female version of the same shampoo) and fill in the form below under "Submit Evidence".</p>
+            <div class="hint">💡 Example: Women's shampoo 250ml at $25 vs. Men's 250ml at $20</div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-number">3</div>
+          <div class="guide-step-content">
+            <strong>Confirm strict equivalence (at least 2 checks required)</strong>
+            <p class="small">Check the boxes for what makes your products equivalent: same quantity, same ingredients/materials, or same manufacturing features. This ensures fair comparisons.</p>
+            <div class="hint">💡 Both products same size? Same active ingredients? Check those boxes.</div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-number">4</div>
+          <div class="guide-step-content">
+            <strong>Add optional proof image and submit</strong>
+            <p class="small">Upload a receipt or shelf tag photo to strengthen your evidence. Images stay on your device—no uploads to a server.</p>
+            <div class="hint">💡 Images are privacy-protected: EXIF data is stripped automatically</div>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-number">5</div>
+          <div class="guide-step-content">
+            <strong>Track and export your findings</strong>
+            <p class="small">All entries are saved locally in your browser. View your evidence table below, export as CSV to share, or import data from others.</p>
+            <div class="hint">💡 All data stays private on your device. Use "Export CSV" to share results.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="toggle-guide" onclick="toggleGuideDetails()">← Collapse quick start</button>
     </div>
 
     <div class="card" id="calculatorCard" aria-labelledby="calcTitle">
@@ -150,7 +235,7 @@
 
     <div class="card" id="evidenceCard" aria-labelledby="evidenceTitle">
       <h2 id="evidenceTitle">Submit Evidence (MVP: personal care, apparel, children)</h2>
-      <p class="small">Strict equivalence enforced: submissions must pass at least 2 objective checks (quantity/unit, composition/materials, manufacturing/features). Images are processed client-side: EXIF is stripped, image is downscaled to protect privacy.</p>
+      <p class="small">Strict equivalence enforced: submissions must pass at least 2 objective checks (quantity/unit, composition/materials, manufacturing/features). Images are processed client-side [...] Do not upload personal ID photos.</p>
 
       <div class="row" style="margin-top:12px;">
         <div style="flex:2;min-width:200px">
@@ -273,6 +358,21 @@
   <script>
     // LocalStorage key
     const LS_KEY = 'gpte_entries_v1';
+
+    // Toggle guide visibility
+    function toggleGuideDetails(){
+      const guide = document.getElementById('howToGuide');
+      const button = guide.querySelector('.toggle-guide');
+      const isCollapsed = guide.style.display === 'none';
+      
+      if(isCollapsed){
+        guide.style.display = 'block';
+        button.textContent = '← Collapse quick start';
+      } else {
+        guide.style.display = 'none';
+        button.textContent = '↓ Expand quick start';
+      }
+    }
 
     // Elements
     const displayCurrency = document.getElementById('displayCurrency');
